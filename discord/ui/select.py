@@ -752,60 +752,60 @@ class Select(ViewItem[V], ModalItem[M], Generic[V, M, ST]):
 
 
 if TYPE_CHECKING:
-    StringSelect = Select[V, str]
+    StringSelect = Select[V, M, str]
     """A typed alias for :class:`Select` for string values.
 
     When creating an instance with this, it will automatically provide the ``select_type``
     parameter as a :attr:`discord.ComponentType.string_select`.
     """
-    UserSelect = Select[V, User | Member]
+    UserSelect = Select[V, M, User | Member]
     """A typed alias for :class:`Select` for user-like values.
 
     When creating an instance with this, it will automatically provide the ``select_type``
     parameter as a :attr:`discord.ComponentType.user_select`.
     """
-    RoleSelect = Select[V, Role]
+    RoleSelect = Select[V, M, Role]
     """A typed alias for :class:`Select` for role values.
 
     When creating an instance with this, it will automatically provide the ``select_type``
     parameter as a :attr:`discord.ComponentType.role_select`.
     """
-    MentionableSelect = Select[V, User | Member | Role]
+    MentionableSelect = Select[V, M, User | Member | Role]
     """A typed alias for :class:`Select` for mentionable (role and user-like) values.
 
     When creating an instance with this, it will automatically provide the ``select_type``
     parameter as a :attr:`discord.ComponentType.mentionable_select`.
     """
-    ChannelSelect = Select[V, GuildChannel | Thread]
+    ChannelSelect = Select[V, M, GuildChannel | Thread]
     """A typed alias for :class:`Select` for channel values.
 
     When creating an instance with this, it will automatically provide the ``select_type``
     parameter as a :attr:`discord.ComponentType.channel_select`.
     """
 else:
-    StringSelect: Select[V, str] = partial(
+    StringSelect: Select[V, M, str] = partial(
         Select, select_type=ComponentType.string_select
     )
     """An alias for :class:`Select` that will pass :attr:`discord.ComponentType.string_select`
     as its default ``select_type``.
     """
-    UserSelect: Select[V, User | Member] = partial(
+    UserSelect: Select[V, M, User | Member] = partial(
         Select, select_type=ComponentType.user_select
     )
     """An alias for :class:`Select` that will pass :attr:`discord.ComponentType.user_select`
     as its default ``select_type``.
     """
-    RoleSelect: Select[V, Role] = partial(Select, select_type=ComponentType.role_select)
+    RoleSelect: Select[V, M, Role] = partial(Select, select_type=ComponentType.role_select)
     """An alias for :class:`Select` that will pass :attr:`discord.ComponentType.role_select`
     as its default ``select_type``.
     """
-    MentionableSelect: Select[V, Role | User | Member] = partial(
+    MentionableSelect: Select[V, M, Role | User | Member] = partial(
         Select, select_type=ComponentType.mentionable_select
     )
     """An alias for :class:`Select` that will pass :attr:`discord.ComponentType.mentionable_select`
     as its default ``select_type``.
     """
-    ChannelSelect: Select[V, GuildChannel | Thread] = partial(
+    ChannelSelect: Select[V, M, GuildChannel | Thread] = partial(
         Select, select_type=ComponentType.channel_select
     )
     """An alias for :class:`Select` that will pass :attr:`discord.ComponentType.channel_select`
@@ -973,7 +973,7 @@ def string_select(
     disabled: bool = False,
     row: int | None = None,
     id: int | None = None,
-) -> Callable[[ItemCallbackType[StringSelect[V]]], StringSelect[V]]:
+) -> Callable[[ItemCallbackType[StringSelect[V, M]]], StringSelect[V, M]]:
     """A shortcut for :meth:`discord.ui.select` with select type :attr:`discord.ComponentType.string_select`.
 
     .. versionadded:: 2.3
@@ -1001,7 +1001,7 @@ def user_select(
     row: int | None = None,
     id: int | None = None,
     default_values: Sequence[SelectDefaultValue | Snowflake] | None = None,
-) -> Callable[[ItemCallbackType[UserSelect[V]]], UserSelect[V]]:
+) -> Callable[[ItemCallbackType[UserSelect[V, M]]], UserSelect[V, M]]:
     """A shortcut for :meth:`discord.ui.select` with select type :attr:`discord.ComponentType.user_select`.
 
     .. versionadded:: 2.3
@@ -1029,7 +1029,7 @@ def role_select(
     row: int | None = None,
     id: int | None = None,
     default_values: Sequence[SelectDefaultValue | Snowflake] | None = None,
-) -> Callable[[ItemCallbackType[RoleSelect[V]]], RoleSelect[V]]:
+) -> Callable[[ItemCallbackType[RoleSelect[V, M]]], RoleSelect[V, M]]:
     """A shortcut for :meth:`discord.ui.select` with select type :attr:`discord.ComponentType.role_select`.
 
     .. versionadded:: 2.3
@@ -1058,8 +1058,8 @@ def mentionable_select(
     id: int | None = None,
     default_values: Sequence[SelectDefaultValue | Snowflake] | None = None,
 ) -> Callable[
-    [ItemCallbackType[MentionableSelect[V]]],
-    MentionableSelect[V],
+    [ItemCallbackType[MentionableSelect[V, M]]],
+    MentionableSelect[V, M],
 ]:
     """A shortcut for :meth:`discord.ui.select` with select type :attr:`discord.ComponentType.mentionable_select`.
 
@@ -1090,8 +1090,8 @@ def channel_select(
     id: int | None = None,
     default_values: Sequence[SelectDefaultValue | Snowflake] | None = None,
 ) -> Callable[
-    [ItemCallbackType[ChannelSelect[V]]],
-    ChannelSelect[V],
+    [ItemCallbackType[ChannelSelect[V, M]]],
+    ChannelSelect[V, M],
 ]:
     """A shortcut for :meth:`discord.ui.select` with select type :attr:`discord.ComponentType.channel_select`.
 

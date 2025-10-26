@@ -88,7 +88,7 @@ if TYPE_CHECKING:
     from .types.interactions import InteractionCallbackResponse, InteractionData
     from .types.interactions import InteractionMetadata as InteractionMetadataPayload
     from .types.interactions import MessageInteraction as MessageInteractionPayload
-    from .ui.modal import Modal
+    from .ui.modal import Modal, DesignerModal
     from .ui.view import BaseView
 
     InteractionChannel = Union[
@@ -1333,7 +1333,7 @@ class InteractionResponse:
         self._responded = True
         await self._process_callback_response(callback_response)
 
-    async def send_modal(self, modal: Modal) -> Interaction:
+    async def send_modal(self, modal: Union[Modal, DesignerModal]) -> Interaction:
         """|coro|
         Responds to this interaction by sending a modal dialog.
         This cannot be used to respond to another modal dialog submission.
