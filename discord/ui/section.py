@@ -25,16 +25,16 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, ClassVar, Iterator, TypeVar
+from typing import TYPE_CHECKING, ClassVar, Iterator, Optional, TypeVar
 
-from ..components import Section as SectionComponent
-from ..components import _component_factory
+from ..components import Section as SectionComponent, _component_factory
 from ..enums import ComponentType
 from ..utils import find, get
 from .button import Button
 from .item import ItemCallbackType, ViewItem
 from .text_display import TextDisplay
 from .thumbnail import Thumbnail
+
 
 __all__ = ("Section",)
 
@@ -86,7 +86,7 @@ class Section(ViewItem[V]):
         cls.__section_accessory_item__ = accessory
 
     def __init__(
-        self, *items: ViewItem, accessory: ViewItem = None, id: int | None = None
+        self, *items: ViewItem, accessory: Optional[ViewItem] = None, id: int | None = None
     ):
         super().__init__()
 
