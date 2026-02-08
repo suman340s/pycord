@@ -152,50 +152,19 @@ class ViewItem(Item[V]):
     def __init__(self):
         super().__init__()
         self._view: V | None = None
-        self._row: int | None = None
-        self._rendered_row: int | None = None
         self.parent: ViewItem | BaseView | None = None
 
     @property
     def row(self) -> int | None:
-        """Gets or sets the row position of this item within its parent view.
-
-        The row position determines the vertical placement of the item in the UI.
-        The value must be an integer between 0 and 39 (inclusive), or ``None`` to indicate
-        that no specific row is set.
-
-        Returns
-        -------
-        Optional[:class:`int`]
-            The row position of the item, or ``None`` if not explicitly set.
-
-        Raises
-        ------
-        ValueError
-            If the row value is not ``None`` and is outside the range [0, 39].
-        """
-        return self._row
+        warn_deprecated("Accessing .row from CV2 Items", since="2.7.1", removed="3.0")
+        return None
 
     @row.setter
-    def row(self, value: int | None):
-        if value is None:
-            self._row = None
-        elif 39 > value >= 0:
-            self._row = value
-        else:
-            raise ValueError("row cannot be negative or greater than or equal to 39")
+    def row(self, value: int | None) -> None:
+        warn_deprecated("Setting .row on CV2 Items", since="2.7.1", removed="3.0")
 
     @property
     def width(self) -> int:
-        """Gets the width of the item in the UI layout.
-
-        The width determines how much horizontal space this item occupies within its row.
-
-        Returns
-        -------
-        :class:`int`
-            The width of the item. Defaults to 1.
-        """
         return 1
 
     @property

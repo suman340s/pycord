@@ -79,6 +79,11 @@ class Container(ViewItem[V]):
         Whether this container has the spoiler overlay.
     id: Optional[:class:`int`]
         The container's ID.
+
+    Attributes
+    ----------
+    items: List[:class:`ViewItem`]
+        The list of items in this container.
     """
 
     __item_repr_attributes__: tuple[str, ...] = (
@@ -169,11 +174,11 @@ class Container(ViewItem[V]):
         try:
             if item.parent is self:
                 self.items.remove(item)
+                item.parent = None
             else:
                 item.parent.remove_item(item)
         except ValueError:
             pass
-        item.parent = None
         return self
 
     def get_item(self, id: str | int) -> ViewItem | None:
