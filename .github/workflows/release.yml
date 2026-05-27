@@ -16,7 +16,7 @@ jobs:
     environment: release
     steps:
       - name: "Security Check"
-        uses: Pycord-Development/execute-whitelist-action@v2.0.0
+        uses: Pycord-Development/execute-whitelist-action@fa88a821c35ea6ca88ee255ded586af6c9cfe1c6 # v2.1.1
         with:
           whitelisted-github-ids: ${{ vars.ALLOWED_USER_IDS }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -68,44 +68,44 @@ jobs:
             echo "is_rc=false" >> $GITHUB_OUTPUT
           fi
 
-#  branch_protection_rename:
-#    needs: [safety_check]
-#    runs-on: ubuntu-latest
-#    environment: release
-#    env:
-#      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-#    outputs:
-#      master_rule_id: ${{ steps.get_rule_ids.outputs.master_rule_id }}
-#      master_pattern: ${{ steps.get_rule_ids.outputs.master_pattern }}
-#      v_rule_id: ${{ steps.get_rule_ids.outputs.v_rule_id }}
-#      v_pattern: ${{ steps.get_rule_ids.outputs.v_pattern }}
-#    steps:
-#      - name: Set up GitHub CLI
-#        uses: wusatosi/setup-gh@v1.1
-#        with:
-#          token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-#      - name: Get branch protection rule IDs
-#        id: get_rule_ids
-#        run: |
-#          gh api repos/${{ github.repository }}/branch-protection-rules > rules.json
-#          MASTER_ID=$(jq -r '.[] | select(.pattern == "master") | .id' rules.json)
-#          MASTER_PATTERN=$(jq -r '.[] | select(.pattern == "master") | .pattern' rules.json)
-#          V_ID=$(jq -r '.[] | select(.pattern | test("^v[0-9]+\\.[0-9]+\\.x$")) | .id' rules.json)
-#          V_PATTERN=$(jq -r '.[] | select(.pattern | test("^v[0-9]+\\.[0-9]+\\.x$")) | .pattern' rules.json)
-#          echo "master_rule_id=$MASTER_ID" >> $GITHUB_OUTPUT
-#          echo "master_pattern=$MASTER_PATTERN" >> $GITHUB_OUTPUT
-#          echo "v_rule_id=$V_ID" >> $GITHUB_OUTPUT
-#          echo "v_pattern=$V_PATTERN" >> $GITHUB_OUTPUT
-#      - name: Rename master protection to temp-master
-#        if: ${{ steps.get_rule_ids.outputs.master_rule_id != '' }}
-#        run: |
-#          gh api repos/${{ github.repository }}/branch-protection-rules/${{ steps.get_rule_ids.outputs.master_rule_id }} \
-#            -X PATCH -F pattern="temp-master"
-#      - name: Rename v*.* protection to temp-v
-#        if: ${{ steps.get_rule_ids.outputs.v_rule_id != '' }}
-#        run: |
-#          gh api repos/${{ github.repository }}/branch-protection-rules/${{ steps.get_rule_ids.outputs.v_rule_id }} \
-#            -X PATCH -F pattern="temp-v"
+  #  branch_protection_rename:
+  #    needs: [safety_check]
+  #    runs-on: ubuntu-latest
+  #    environment: release
+  #    env:
+  #      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+  #    outputs:
+  #      master_rule_id: ${{ steps.get_rule_ids.outputs.master_rule_id }}
+  #      master_pattern: ${{ steps.get_rule_ids.outputs.master_pattern }}
+  #      v_rule_id: ${{ steps.get_rule_ids.outputs.v_rule_id }}
+  #      v_pattern: ${{ steps.get_rule_ids.outputs.v_pattern }}
+  #    steps:
+  #      - name: Set up GitHub CLI
+  #        uses: wusatosi/setup-gh@v1.1
+  #        with:
+  #          token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+  #      - name: Get branch protection rule IDs
+  #        id: get_rule_ids
+  #        run: |
+  #          gh api repos/${{ github.repository }}/branch-protection-rules > rules.json
+  #          MASTER_ID=$(jq -r '.[] | select(.pattern == "master") | .id' rules.json)
+  #          MASTER_PATTERN=$(jq -r '.[] | select(.pattern == "master") | .pattern' rules.json)
+  #          V_ID=$(jq -r '.[] | select(.pattern | test("^v[0-9]+\\.[0-9]+\\.x$")) | .id' rules.json)
+  #          V_PATTERN=$(jq -r '.[] | select(.pattern | test("^v[0-9]+\\.[0-9]+\\.x$")) | .pattern' rules.json)
+  #          echo "master_rule_id=$MASTER_ID" >> $GITHUB_OUTPUT
+  #          echo "master_pattern=$MASTER_PATTERN" >> $GITHUB_OUTPUT
+  #          echo "v_rule_id=$V_ID" >> $GITHUB_OUTPUT
+  #          echo "v_pattern=$V_PATTERN" >> $GITHUB_OUTPUT
+  #      - name: Rename master protection to temp-master
+  #        if: ${{ steps.get_rule_ids.outputs.master_rule_id != '' }}
+  #        run: |
+  #          gh api repos/${{ github.repository }}/branch-protection-rules/${{ steps.get_rule_ids.outputs.master_rule_id }} \
+  #            -X PATCH -F pattern="temp-master"
+  #      - name: Rename v*.* protection to temp-v
+  #        if: ${{ steps.get_rule_ids.outputs.v_rule_id != '' }}
+  #        run: |
+  #          gh api repos/${{ github.repository }}/branch-protection-rules/${{ steps.get_rule_ids.outputs.v_rule_id }} \
+  #            -X PATCH -F pattern="temp-v"
 
   lib_release:
     needs: [pre_config] # , branch_protection_rename
@@ -115,7 +115,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -129,14 +129,14 @@ jobs:
           git fetch origin
           if ! git show-ref --verify --quiet refs/heads/$VERSION_BRANCH; then
             git checkout -b $VERSION_BRANCH
-            git push origin $VERSION_BRANCH
+            git push origin $VERSION_BRANCH -f
           fi
           git checkout $VERSION_BRANCH
       - name: "Setup Python"
         id: python-setup
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: "pip"
           cache-dependency-path: "requirements/_release.txt"
       - name: "Install Release Dependencies"
@@ -215,7 +215,7 @@ jobs:
           python3 -m build --sdist
           python3 -m build --wheel
       - name: "Create GitHub Release"
-        uses: softprops/action-gh-release@v2.5.0
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
         id: gh-release
         with:
           tag_name: "v${{ inputs.version }}"
@@ -232,7 +232,7 @@ jobs:
           target_commitish: ${{ github.ref_name }}
 
       - name: "Publish package distributions to PyPI"
-        uses: pypa/gh-action-pypi-publish@v1.13.0
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
         env:
           name: "pypi"
           url: "https://pypi.org/p/py-cord"
@@ -251,7 +251,7 @@ jobs:
     environment: release
     steps:
       - name: "Checkout repository"
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -265,30 +265,30 @@ jobs:
             --version "${{ needs.pre_config.outputs.version }}" \
             --sync
 
-  inform_discord:
-    runs-on: ubuntu-latest
-    needs: [docs_release, lib_release, pre_config]
-    environment: release
-    steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          fetch-tags: true
+  #inform_discord:
+  #  runs-on: ubuntu-latest
+  #  needs: [docs_release, lib_release, pre_config]
+  #  environment: release
+  #  steps:
+  #    - name: "Checkout repository"
+  #      uses: actions/checkout@v6
+  #      with:
+  #        fetch-depth: 0
+  #        fetch-tags: true
 
-      - name: "Notify Discord"
-        env:
-          VERSION: ${{ needs.pre_config.outputs.version }}
-          PREVIOUS_TAG: ${{ needs.pre_config.outputs.previous_tag }}
-          PREVIOUS_FINAL_TAG: ${{ needs.pre_config.outputs.previous_final_tag }}
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          REPOSITORY: ${{ github.repository }}
-        run: python scripts/discord_release_notification.py
+  #     - name: "Notify Discord"
+  #      env:
+  #       VERSION: ${{ needs.pre_config.outputs.version }}
+  #       PREVIOUS_TAG: ${{ needs.pre_config.outputs.previous_tag }}
+  #       PREVIOUS_FINAL_TAG: ${{ needs.pre_config.outputs.previous_final_tag }}
+  #       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  #       REPOSITORY: ${{ github.repository }}
+  #      run: python scripts/discord_release_notification.py
 
   determine_milestone_id:
     runs-on: ubuntu-latest
     needs: [lib_release, pre_config]
-    if: ${{ !contains(needs.pre_config.outputs.version, '-') }}
+    if: ${{ !contains(needs.pre_config.outputs.version, '-') && false }}
     outputs:
       old_milestone_version: ${{ steps.extract_version.outputs.old_milestone_version }}
       new_milestone_version: ${{ steps.extract_version.outputs.new_milestone_version }}
@@ -307,32 +307,31 @@ jobs:
           echo "old_milestone_version=$OLD_MILESTONE_VERSION" >> $GITHUB_OUTPUT
           echo "new_milestone_version=$NEW_MILESTONE_VERSION" >> $GITHUB_OUTPUT
 
-  close_milestone:
-    runs-on: ubuntu-latest
-    needs: [determine_milestone_id, pre_config]
-    if:
-      ${{ !contains(needs.pre_config.outputs.version, 'rc') &&
-      endsWith(needs.pre_config.outputs.version, '.0') }}
-    environment: release
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: "Checkout Repository"
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: "Close Milestone"
-        run: |
-          gh extension install valeriobelli/gh-milestone
-          OLD_MILESTONE_ID=$(gh milestone list --query "${{ needs.determine_milestone_id.outputs.old_milestone_version }}" | grep "#" | cut -d' ' -f2 | cut -d '#' -f2)
-          gh milestone edit $OLD_MILESTONE_ID --state closed
-
-      - name: "Create New Milestone"
-        run: |
-          gh extension install valeriobelli/gh-milestone
-          gh milestone create -t "${{ needs.determine_milestone_id.outputs.new_milestone_version }}"
+#  close_milestone:
+#    runs-on: ubuntu-latest
+#    needs: [determine_milestone_id, pre_config]
+#    if: ${{ !contains(needs.pre_config.outputs.version, 'rc') &&
+#      endsWith(needs.pre_config.outputs.version, '.0') && false }}
+#    environment: release
+#    env:
+#      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#    steps:
+#      - name: "Checkout Repository"
+#        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+#        with:
+#          fetch-depth: 0
+#          fetch-tags: true
+#
+#      - name: "Close Milestone"
+#        run: |
+#          gh extension install valeriobelli/gh-milestone
+#          OLD_MILESTONE_ID=$(gh milestone list --query "${{ needs.determine_milestone_id.outputs.old_milestone_version }}" | grep "#" | cut -d' ' -f2 | cut -d '#' -f2)
+#          gh milestone edit $OLD_MILESTONE_ID --state closed
+#
+#      - name: "Create New Milestone"
+#        run: |
+#          gh extension install valeriobelli/gh-milestone
+#          gh milestone create -t "${{ needs.determine_milestone_id.outputs.new_milestone_version }}"
 
 #  branch_protection_restore:
 #    runs-on: ubuntu-latest

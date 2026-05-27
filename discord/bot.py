@@ -57,7 +57,7 @@ from .commands import (
     UserCommand,
     command,
 )
-from .enums import IntegrationType, InteractionContextType, InteractionType
+from .enums import IntegrationType, InteractionContextType, InteractionType, TeamRole
 from .errors import CheckFailure, DiscordException
 from .interactions import Interaction
 from .shard import AutoShardedClient
@@ -66,8 +66,15 @@ from .user import User
 from .utils import MISSING, async_all, find, get
 
 if TYPE_CHECKING:
-    from .member import Member
+    from typing_extensions import Never
 
+    from .cog import Cog
+    from .commands import Option
+    from .ext.commands import Cooldown
+    from .member import Member
+    from .permissions import Permissions
+
+C = TypeVar("C", bound=MessageCommand | SlashCommand | UserCommand)
 CoroFunc = Callable[..., Coroutine[Any, Any, Any]]
 CFT = TypeVar("CFT", bound=CoroFunc)
 
@@ -908,66 +915,210 @@ class ApplicationCommandMixin(ABC):
             if not autocomplete_task.done():
                 autocomplete_task.cancel()
 
-    def slash_command(self, **kwargs):
-        """A shortcut decorator that invokes :func:`command` and adds it to
-        the internal command list via :meth:`add_application_command`.
-        This shortcut is made specifically for :class:`.SlashCommand`.
+    def slash_command(
+        self,
+        *,
+        checks: list[Callable[[ApplicationContext], bool]] | None = MISSING,
+        cog: Cog | None = MISSING,
+        contexts: set[InteractionContextType] | None = MISSING,
+        cooldown: Cooldown | None = MISSING,
+        default_member_permissions: Permissions | None = MISSING,
+        description: str | None = MISSING,
+        description_localizations: dict[str, str] | None = MISSING,
+        guild_ids: list[int] | None = MISSING,
+        guild_only: bool | None = MISSING,
+        integration_types: set[IntegrationType] | None = MISSING,
+        name: str | None = MISSING,
+        name_localizations: dict[str, str] | None = MISSING,
+        nsfw: bool | None = MISSING,
+        options: list[Option] | None = MISSING,
+        parent: SlashCommandGroup | None = MISSING,
+        **kwargs: Never,
+    ) -> Callable[..., SlashCommand]:
+        """A shortcut decorator for adding a slash command to the bot.
+        This is equivalent to using :meth:`application_command`, providing
+        the :class:`SlashCommand` class.
 
         .. versionadded:: 2.0
 
         Returns
         -------
         Callable[..., :class:`SlashCommand`]
-            A decorator that converts the provided method into a :class:`.SlashCommand`, adds it to the bot,
-            then returns it.
+            A decorator that converts the provided function into a :class:`.SlashCommand`,
+            adds it to the bot, and returns it.
         """
-        return self.application_command(cls=SlashCommand, **kwargs)
+        return self.application_command(
+            cls=SlashCommand,
+            checks=checks,
+            cog=cog,
+            contexts=contexts,
+            cooldown=cooldown,
+            default_member_permissions=default_member_permissions,
+            description=description,
+            description_localizations=description_localizations,
+            guild_ids=guild_ids,
+            guild_only=guild_only,
+            integration_types=integration_types,
+            name=name,
+            name_localizations=name_localizations,
+            nsfw=nsfw,
+            options=options,
+            parent=parent,
+            **kwargs,
+        )
 
-    def user_command(self, **kwargs):
-        """A shortcut decorator that invokes :func:`command` and adds it to
-        the internal command list via :meth:`add_application_command`.
-        This shortcut is made specifically for :class:`.UserCommand`.
+    def user_command(
+        self,
+        *,
+        checks: list[Callable[[ApplicationContext], bool]] | None = MISSING,
+        cog: Cog | None = MISSING,
+        contexts: set[InteractionContextType] | None = MISSING,
+        cooldown: Cooldown | None = MISSING,
+        default_member_permissions: Permissions | None = MISSING,
+        guild_ids: list[int] | None = MISSING,
+        guild_only: bool | None = MISSING,
+        integration_types: set[IntegrationType] | None = MISSING,
+        name: str | None = MISSING,
+        name_localizations: dict[str, str] | None = MISSING,
+        nsfw: bool | None = MISSING,
+        **kwargs: Never,
+    ) -> Callable[..., UserCommand]:
+        """A shortcut decorator for adding a user command to the bot.
+        This is equivalent to using :meth:`application_command`, providing
+        the :class:`UserCommand` class.
 
         .. versionadded:: 2.0
 
         Returns
         -------
         Callable[..., :class:`UserCommand`]
-            A decorator that converts the provided method into a :class:`.UserCommand`, adds it to the bot,
-            then returns it.
+            A decorator that converts the provided function into a :class:`.UserCommand`,
+            adds it to the bot, and returns it.
         """
-        return self.application_command(cls=UserCommand, **kwargs)
+        return self.application_command(
+            cls=UserCommand,
+            checks=checks,
+            cog=cog,
+            contexts=contexts,
+            cooldown=cooldown,
+            default_member_permissions=default_member_permissions,
+            guild_ids=guild_ids,
+            guild_only=guild_only,
+            integration_types=integration_types,
+            name=name,
+            name_localizations=name_localizations,
+            nsfw=nsfw,
+            **kwargs,
+        )
 
-    def message_command(self, **kwargs):
-        """A shortcut decorator that invokes :func:`command` and adds it to
-        the internal command list via :meth:`add_application_command`.
-        This shortcut is made specifically for :class:`.MessageCommand`.
+    def message_command(
+        self,
+        *,
+        checks: list[Callable[[ApplicationContext], bool]] | None = MISSING,
+        cog: Cog | None = MISSING,
+        contexts: set[InteractionContextType] | None = MISSING,
+        cooldown: Cooldown | None = MISSING,
+        default_member_permissions: Permissions | None = MISSING,
+        guild_ids: list[int] | None = MISSING,
+        guild_only: bool | None = MISSING,
+        integration_types: set[IntegrationType] | None = MISSING,
+        name: str | None = MISSING,
+        name_localizations: dict[str, str] | None = MISSING,
+        nsfw: bool | None = MISSING,
+        **kwargs: Never,
+    ) -> Callable[..., MessageCommand]:
+        """A shortcut decorator for adding a message command to the bot.
+        This is equivalent to using :meth:`application_command`, providing
+        the :class:`MessageCommand` class.
 
         .. versionadded:: 2.0
 
         Returns
         -------
         Callable[..., :class:`MessageCommand`]
-            A decorator that converts the provided method into a :class:`.MessageCommand`, adds it to the bot,
-            then returns it.
+            A decorator that converts the provided function into a :class:`.MessageCommand`,
+            adds it to the bot, and returns it.
         """
-        return self.application_command(cls=MessageCommand, **kwargs)
+        return self.application_command(
+            cls=MessageCommand,
+            checks=checks,
+            cog=cog,
+            contexts=contexts,
+            cooldown=cooldown,
+            default_member_permissions=default_member_permissions,
+            guild_ids=guild_ids,
+            guild_only=guild_only,
+            integration_types=integration_types,
+            name=name,
+            name_localizations=name_localizations,
+            nsfw=nsfw,
+            **kwargs,
+        )
 
-    def application_command(self, **kwargs):
-        """A shortcut decorator that invokes :func:`command` and adds it to
+    def application_command(
+        self,
+        *,
+        cls: type[C] = SlashCommand,
+        checks: list[Callable[[ApplicationContext], bool]] | None = MISSING,
+        cog: Cog | None = MISSING,
+        contexts: set[InteractionContextType] | None = MISSING,
+        cooldown: Cooldown | None = MISSING,
+        default_member_permissions: Permissions | None = MISSING,
+        description: str | None = MISSING,
+        description_localizations: dict[str, str] | None = MISSING,
+        guild_ids: list[int] | None = MISSING,
+        guild_only: bool | None = MISSING,
+        integration_types: set[IntegrationType] | None = MISSING,
+        name: str | None = MISSING,
+        name_localizations: dict[str, str] | None = MISSING,
+        nsfw: bool | None = MISSING,
+        options: list[Option] | None = MISSING,
+        parent: SlashCommandGroup | None = MISSING,
+        **kwargs: Any,
+    ) -> Callable[..., C]:
+        """A shortcut decorator that converts the provided function into
+        an application command via :func:`command` and adds it to
         the internal command list via :meth:`~.Bot.add_application_command`.
 
         .. versionadded:: 2.0
 
+        Parameters
+        ----------
+        cls: Type[:class:`ApplicationCommand`]
+            The factory class that will be used to create the command.
+            By default, this is :class:`.SlashCommand`. Should a custom
+            class be provided, it must be a subclass of either
+            :class:`SlashCommand`, :class:`MessageCommand` or :class:`UserCommand`.
+
         Returns
         -------
         Callable[..., :class:`ApplicationCommand`]
-            A decorator that converts the provided method into an :class:`.ApplicationCommand`, adds it to the bot,
-            then returns it.
+            A decorator that converts the provided function into an :class:`.ApplicationCommand`,
+            adds it to the bot, and returns it.
         """
 
-        def decorator(func) -> ApplicationCommand:
-            result = command(**kwargs)(func)
+        params = {
+            "checks": checks,
+            "cog": cog,
+            "contexts": contexts,
+            "cooldown": cooldown,
+            "default_member_permissions": default_member_permissions,
+            "description": description,
+            "description_localizations": description_localizations,
+            "guild_ids": guild_ids,
+            "guild_only": guild_only,
+            "integration_types": integration_types,
+            "name": name,
+            "name_localizations": name_localizations,
+            "nsfw": nsfw,
+            "options": options,
+            "parent": parent,
+            **kwargs,
+        }
+        kwargs = {k: v for k, v in params.items() if v is not MISSING}
+
+        def decorator(func) -> C:
+            result = command(cls=cls, **kwargs)(func)
             self.add_application_command(result)
             return result
 
@@ -985,8 +1136,8 @@ class ApplicationCommandMixin(ABC):
         Returns
         -------
         Callable[..., :class:`ApplicationCommand`]
-            A decorator that converts the provided method into an :class:`.ApplicationCommand`, adds it to the bot,
-            then returns it.
+            A decorator that converts the provided function into an :class:`.ApplicationCommand`,
+            adds it to the bot, and returns it.
         """
         return self.application_command(**kwargs)
 
@@ -1431,7 +1582,8 @@ class BotBase(ApplicationCommandMixin, CogMixin, ABC):
         this bot.
 
         If an :attr:`owner_id` is not set, it is fetched automatically
-        through the use of :meth:`~.Bot.application_info`.
+        through the use of :meth:`~.Bot.application_info`, returning
+        the application owner, or all non read-only team members.
 
         .. versionchanged:: 1.3
             The function also checks if the application is team-owned if
@@ -1455,7 +1607,9 @@ class BotBase(ApplicationCommandMixin, CogMixin, ABC):
         else:
             app = await self.application_info()  # type: ignore
             if app.team:
-                self.owner_ids = ids = {m.id for m in app.team.members}
+                self.owner_ids = ids = {
+                    m.id for m in app.team.members if m.role is not TeamRole.read_only
+                }
                 return user.id in ids
             else:
                 self.owner_id = owner_id = app.owner.id
@@ -1481,11 +1635,12 @@ class Bot(BotBase, Client):
     owner_id: Optional[:class:`int`]
         The user ID that owns the bot. If this is not set and is then queried via
         :meth:`.is_owner` then it is fetched automatically using
-        :meth:`~.Bot.application_info`.
+        :meth:`~.Bot.application_info`, returning the application owner.
     owner_ids: Optional[Collection[:class:`int`]]
         The user IDs that owns the bot. This is similar to :attr:`owner_id`.
         If this is not set and the application is team based, then it is
-        fetched automatically using :meth:`~.Bot.application_info`.
+        fetched automatically using :meth:`~.Bot.application_info`,
+        returning all non read-only team members.
         For performance reasons it is recommended to use a :class:`set`
         for the collection. You cannot set both ``owner_id`` and ``owner_ids``.
 
